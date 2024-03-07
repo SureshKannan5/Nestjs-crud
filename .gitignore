@@ -3,6 +3,8 @@
 /node_modules
 /build
 
+dist
+
 node_modules
 # Logs
 logs
