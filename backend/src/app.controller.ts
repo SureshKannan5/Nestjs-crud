@@ -1,7 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
-@Controller()
+// responsible for handling incoming requests and returning responses to the client.
+@Controller() // decorator + class
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
