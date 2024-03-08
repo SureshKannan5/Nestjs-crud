@@ -7,8 +7,9 @@ import {
 import { TASK_MODEL } from 'src/utils/constants';
 import { CreateTaskDto } from './dto/createTasks.dto';
 import { Model } from 'mongoose';
-import { Tasks } from './interfaces/task.interfaces';
+import { FilteredTasks, Tasks } from './interfaces/task.interfaces';
 import { UpdateTasksDto } from './dto/updateTasks.dto';
+import { ListTasksDto } from './dto/listTasks.dto';
 
 @Injectable()
 export class TasksService {
@@ -95,6 +96,47 @@ export class TasksService {
       }
     } catch (error) {
       throw new NotFoundException('Task not found');
+    }
+  }
+
+  // tasks server pagination service function
+
+  async listAllTasksByFilter(
+    page: number = 1,
+    limit: number = 10,
+    filter: ListTasksDto,
+  ): Promise<FilteredTasks> {
+    try {
+      const { status, sortKey } = filter;
+      if (this.checkDatabaseConnection()) {
+        // skip the records for paginated results
+        const skip = (page - 1) * limit;
+
+        const sortType = sortKey === 'ASC' ? 1 : -1;
+
+        let query = this.userModal.find();
+
+        if (status !== 'ALL') {
+          query = query.where('status').equals(status);
+        }
+
+        // Execute the query to get the total count of items
+        const totalItemCount = await this.userModal.countDocuments(
+          query.getFilter(),
+        );
+        console.log('totalItemCount', totalItemCount);
+
+        const items = await query
+          .sort({ _id: sortType })
+          .skip(skip)
+          .limit(limit)
+          .exec();
+
+        return { data: items, totalTasks: totalItemCount };
+      }
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error.message);
     }
   }
 

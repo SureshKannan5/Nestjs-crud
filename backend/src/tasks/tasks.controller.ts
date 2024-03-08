@@ -14,6 +14,7 @@ import { BASE_URL } from 'src/utils/constants';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/createTasks.dto';
 import { UpdateTasksDto } from './dto/updateTasks.dto';
+import { ListTasksDto } from './dto/listTasks.dto';
 
 @Controller(`${BASE_URL}/task`)
 export class TasksController {
@@ -67,6 +68,23 @@ export class TasksController {
     } catch (error) {
       console.log(error);
       throw new NotFoundException(error.message);
+    }
+  }
+
+  @Post('/filter/:pageNumber/:limit')
+  async listTasksByFilter(
+    @Param('pageNumber') pageNumber: number = 1,
+    @Param('limit') limit: number = 10,
+    @Body() listTaskDto: ListTasksDto,
+  ) {
+    try {
+      return this.taskServices.listAllTasksByFilter(
+        pageNumber,
+        limit,
+        listTaskDto,
+      );
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }
