@@ -1,19 +1,25 @@
 import DataTable from "../app/components/DataTable";
 import { Content } from "antd/es/layout/layout";
-import { Button, Tag, Typography } from "antd";
+import { Button, Space, Tag, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import {
   useDeleteTaskMutation,
   useListAllTasksQuery,
 } from "../redux/services/baseApiSetup";
-import { STATUS_BADGE, PAGE_NOTIFICATIONS } from "../app/utils/constants";
+import {
+  STATUS_BADGE,
+  PAGE_NOTIFICATIONS,
+  SORT_OPTIONS,
+  FILTER_STATUS_OPTIONS,
+} from "../app/utils/constants";
 import CustomOffCanvas from "../app/components/CustomOffCanvas";
 import { useDispatch, useSelector } from "react-redux";
 import { getCanvasInfo, setCanvasInfo } from "../redux/slices/canvas.slice";
 import DeleteModal from "../app/components/DeleteModal";
+import CustomSelect from "../app/components/CustomSelect";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const HomePage = () => {
   const [loadPage, setLoadPage] = useState(false);
@@ -90,9 +96,7 @@ const HomePage = () => {
   };
 
   const handleDelete = async () => {
-    console.log(canvasReduxState);
     const { selectedRow } = canvasReduxState;
-    console.log(selectedRow);
     try {
       const response = await deleteTask(selectedRow._id).unwrap();
 
@@ -133,10 +137,36 @@ const HomePage = () => {
         >
           <Title level={3}>Task Management</Title>
           <div className="filter-container">
-            <div></div>
-            <Button type="primary" icon={<PlusOutlined />} onClick={showDrawer}>
-              Add Task
-            </Button>
+            <Space direction="vertical">
+              {" "}
+              <Text>Filter By Status</Text>
+              <CustomSelect
+                style={{ width: 200 }}
+                options={FILTER_STATUS_OPTIONS}
+                defaultValue={FILTER_STATUS_OPTIONS[0]}
+                placeholder="Select Stauls"
+              />
+            </Space>
+
+            <Space dir="horizontal">
+              <Space direction="horizontal">
+                <Text>Sort By</Text>
+                <CustomSelect
+                  style={{ width: 200 }}
+                  defaultValue={SORT_OPTIONS[0]}
+                  options={SORT_OPTIONS}
+                  placeholder="Sort By"
+                />
+              </Space>
+
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={showDrawer}
+              >
+                Add Task
+              </Button>
+            </Space>
           </div>
 
           <DataTable

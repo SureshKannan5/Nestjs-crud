@@ -32,3 +32,13 @@ export const TASK_STATUS_OPTIONS = [
   { label: "In Progress", value: "IN_PROGRESS" },
   { label: "Done", value: "DONE" },
 ];
+
+export const FILTER_STATUS_OPTIONS = [
+  { label: "All", value: "all" },
+  ...TASK_STATUS_OPTIONS,
+];
+
+export const SORT_OPTIONS = [
+  { label: "Old to New", value: "ASC" },
+  { label: "New to Old", value: "DESC" },
+];
