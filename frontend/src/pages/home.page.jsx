@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCanvasInfo, setCanvasInfo } from "../redux/slices/canvas.slice";
 import DeleteModal from "../app/components/DeleteModal";
 import CustomSelect from "../app/components/CustomSelect";
-import { get, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 
 const { Title, Text } = Typography;
 
@@ -32,7 +32,7 @@ const HomePage = () => {
   });
 
   const [listPayload, setListPayload] = useState({
-    sortKey: "ASC",
+    sortKey: "DESC",
     status: "ALL",
   });
 
@@ -61,6 +61,7 @@ const HomePage = () => {
     tableParams.current,
     listPayload.status,
     tableParams.pageSize,
+    canvasReduxState.refreshPage,
   ]);
 
   const showDrawer = () => {
@@ -117,11 +118,19 @@ const HomePage = () => {
     }
   };
 
-  const handleTableChange = (pagination, filters, sorter) => {
-    console.log(pagination, filters, sorter);
+  // handle when pageNumber change in a table
+
+  const handleTableChange = (pagination) => {
     setTableParams((state) => ({ ...state, ...pagination }));
   };
 
+  // Handle filters values Chnage
+
+  const onFilterChange = (name, value) => {
+    setTableParams((state) => ({ ...state, current: 1, total: 0 }));
+
+    setListPayload((state) => ({ ...state, [name]: value }));
+  };
   // component life cycle
 
   useEffect(() => {
@@ -156,12 +165,7 @@ const HomePage = () => {
                 options={FILTER_STATUS_OPTIONS}
                 defaultValue={FILTER_STATUS_OPTIONS[0]}
                 placeholder="Select Status"
-                onChange={(status) =>
-                  setListPayload((state) => ({
-                    ...state,
-                    status,
-                  }))
-                }
+                onChange={(value) => onFilterChange("status", value)}
               />
             </Space>
 
@@ -173,12 +177,7 @@ const HomePage = () => {
                   defaultValue={SORT_OPTIONS[0]}
                   options={SORT_OPTIONS}
                   placeholder="Sort By"
-                  onChange={(sortKey) => {
-                    setListPayload((state) => ({
-                      ...state,
-                      sortKey,
-                    }));
-                  }}
+                  onChange={(value) => onFilterChange("sortKey", value)}
                 />
               </Space>
 

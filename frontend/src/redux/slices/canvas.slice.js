@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   selectedRow: {},
-  action: "create",
+  refreshPage: false,
   isOpen: false,
   title: "",
 };
@@ -23,15 +23,10 @@ const canvasSlice = createSlice({
         };
       },
     },
-    closeCanvas: {
-      reducer: (state) => {
-        state.canvasInfo = initialState;
-      },
-    },
   },
 });
 
-export const { setCanvasInfo, closeCanvas } = canvasSlice.actions;
+export const { setCanvasInfo } = canvasSlice.actions;
 
 export const getCanvasInfo = (state) => state.canvasState.canvasInfo;
 

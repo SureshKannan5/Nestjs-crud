@@ -1,6 +1,6 @@
 import { Drawer, Form, Button, Input, Space } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { closeCanvas, getCanvasInfo } from "../../redux/slices/canvas.slice";
+import { getCanvasInfo, setCanvasInfo } from "../../redux/slices/canvas.slice";
 import {
   useCreateTaskMutation,
   useUpdateTaskMutation,
@@ -14,7 +14,9 @@ const CustomOffCanvas = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
-  const { title, selectedRow, isOpen } = useSelector(getCanvasInfo);
+  const canvasReduxState = useSelector(getCanvasInfo);
+
+  const { title, selectedRow, isOpen, refreshPage } = canvasReduxState;
 
   const [createTask] = useCreateTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
@@ -34,6 +36,7 @@ const CustomOffCanvas = () => {
       try {
         await createTask(values).unwrap();
         PAGE_NOTIFICATIONS.success("Task created sucessfully");
+        onClose(true);
       } catch (error) {
         PAGE_NOTIFICATIONS.error(error.data.message);
       }
@@ -43,14 +46,21 @@ const CustomOffCanvas = () => {
     try {
       await updateTask({ id: selectedRow._id, payload: values }).unwrap();
       PAGE_NOTIFICATIONS.success("Task updated sucessfully");
-      onClose();
+      onClose(true);
     } catch (error) {
       PAGE_NOTIFICATIONS.error(error.data.message);
     }
   };
 
-  const onClose = () => {
-    dispatch(closeCanvas());
+  const onClose = (reloadPage) => {
+    dispatch(
+      setCanvasInfo(canvasReduxState, {
+        selectedRow: {},
+        refreshPage: reloadPage ? !refreshPage : refreshPage,
+        isOpen: false,
+        title: "",
+      })
+    );
   };
 
   const onSelectChange = (value) => {

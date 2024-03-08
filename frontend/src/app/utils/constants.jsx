@@ -39,8 +39,8 @@ export const FILTER_STATUS_OPTIONS = [
 ];
 
 export const SORT_OPTIONS = [
-  { label: "Old to New", value: "ASC" },
   { label: "New to Old", value: "DESC" },
+  { label: "Old to New", value: "ASC" },
 ];
 
 export const TASK_TABLE_COLUMNS = [
