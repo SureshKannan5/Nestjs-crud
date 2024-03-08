@@ -81,6 +81,8 @@ export class TasksService {
     }
   }
 
+  // delete user by id
+
   async deleteTaskById(id: string) {
     try {
       if (this.checkDatabaseConnection()) {
