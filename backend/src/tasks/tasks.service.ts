@@ -127,7 +127,7 @@ export class TasksService {
         console.log('totalItemCount', totalItemCount);
 
         const items = await query
-          .sort({ _id: sortType })
+          .sort({ updatedAt: sortType })
           .skip(skip)
           .limit(limit)
           .exec();
