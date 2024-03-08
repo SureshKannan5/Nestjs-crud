@@ -1,10 +1,11 @@
 import DataTable from "../app/components/DataTable";
 import { Content } from "antd/es/layout/layout";
-import { Button, Typography } from "antd";
+import { Button, Tag, Typography } from "antd";
 import { ShopOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import React from "react";
 import { useListAllTasksQuery } from "../redux/services/baseApiSetup";
+import { getStatusBadge } from "../app/utils/helper";
 
 const { Title } = Typography;
 
@@ -44,6 +45,15 @@ const HomePage = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      render: (status) => {
+        const matchedStatus = getStatusBadge[status];
+
+        return (
+          <Tag color={matchedStatus.color} icon={matchedStatus.icon}>
+            {matchedStatus.name}
+          </Tag>
+        );
+      },
     },
   ];
 
@@ -101,7 +111,7 @@ const HomePage = () => {
         <Content
           className="whiteBox shadow layoutPadding"
           style={{
-            margin: "30px auto",
+            margin: "10px auto",
             width: "100%",
             maxWidth: "100%",
             flex: "none",

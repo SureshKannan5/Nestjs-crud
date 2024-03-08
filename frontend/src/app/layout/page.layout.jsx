@@ -9,7 +9,7 @@ const PageLayout = ({ children }) => {
           style={{
             overflow: "initial",
             width: "100%",
-            padding: 25,
+            padding: 15,
             maxWidth: "100%",
           }}
         >
