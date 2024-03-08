@@ -3,7 +3,7 @@ import {
   CheckOutlined,
   ScheduleOutlined,
 } from "@ant-design/icons";
-import { message } from "antd";
+import { message, Tag } from "antd";
 
 export const STATUS_BADGE = {
   TODO: { name: "Todo", color: "red", icon: <ScheduleOutlined /> },
@@ -34,11 +34,38 @@ export const TASK_STATUS_OPTIONS = [
 ];
 
 export const FILTER_STATUS_OPTIONS = [
-  { label: "All", value: "all" },
+  { label: "All", value: "ALL" },
   ...TASK_STATUS_OPTIONS,
 ];
 
 export const SORT_OPTIONS = [
   { label: "Old to New", value: "ASC" },
   { label: "New to Old", value: "DESC" },
+];
+
+export const TASK_TABLE_COLUMNS = [
+  {
+    title: "Title",
+    dataIndex: "title",
+    key: "title",
+  },
+  {
+    title: "Description",
+    dataIndex: "description",
+    key: "Description",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (status) => {
+      const matchedStatus = STATUS_BADGE[status];
+
+      return (
+        <Tag color={matchedStatus.color} icon={matchedStatus.icon}>
+          {matchedStatus.name}
+        </Tag>
+      );
+    },
+  },
 ];

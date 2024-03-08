@@ -33,6 +33,13 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    listFilteredTasks: build.mutation({
+      query: ({ page, limit, payload }) => ({
+        url: `${BASE_URL}/filter/${page}/${limit}`,
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
   reducerPath: "baseApi",
 });
@@ -43,4 +50,5 @@ export const {
   useLazyGetSingleTaskQuery,
   useListAllTasksQuery,
   useUpdateTaskMutation,
+  useListFilteredTasksMutation,
 } = api;

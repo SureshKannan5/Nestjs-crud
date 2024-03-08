@@ -1,65 +1,67 @@
 import DataTable from "../app/components/DataTable";
 import { Content } from "antd/es/layout/layout";
-import { Button, Space, Tag, Typography } from "antd";
+import { Button, Space, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   useDeleteTaskMutation,
-  useListAllTasksQuery,
+  useListFilteredTasksMutation,
 } from "../redux/services/baseApiSetup";
 import {
-  STATUS_BADGE,
   PAGE_NOTIFICATIONS,
   SORT_OPTIONS,
   FILTER_STATUS_OPTIONS,
+  TASK_TABLE_COLUMNS,
 } from "../app/utils/constants";
 import CustomOffCanvas from "../app/components/CustomOffCanvas";
 import { useDispatch, useSelector } from "react-redux";
 import { getCanvasInfo, setCanvasInfo } from "../redux/slices/canvas.slice";
 import DeleteModal from "../app/components/DeleteModal";
 import CustomSelect from "../app/components/CustomSelect";
+import { get, isEmpty } from "lodash";
 
 const { Title, Text } = Typography;
 
 const HomePage = () => {
-  const [loadPage, setLoadPage] = useState(false);
-
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [tableParams, setTableParams] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
+  const [listPayload, setListPayload] = useState({
+    sortKey: "ASC",
+    status: "ALL",
+  });
 
   const dispatch = useDispatch();
 
   const canvasReduxState = useSelector(getCanvasInfo);
 
-  const { data } = useListAllTasksQuery({});
-
   const [deleteTask] = useDeleteTaskMutation();
 
-  const columns = [
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "Description",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        const matchedStatus = STATUS_BADGE[status];
+  const [listFilteredTasks, allTasksResponse] = useListFilteredTasksMutation();
 
-        return (
-          <Tag color={matchedStatus.color} icon={matchedStatus.icon}>
-            {matchedStatus.name}
-          </Tag>
-        );
-      },
-    },
-  ];
+  const getFilterTasks = useCallback(async () => {
+    try {
+      const response = await listFilteredTasks({
+        page: tableParams.current,
+        limit: tableParams.pageSize,
+        payload: listPayload,
+      }).unwrap();
+
+      setTableParams((state) => ({ ...state, total: response.totalTasks }));
+    } catch (error) {
+      console.log("error", error);
+    }
+  }, [
+    listPayload.sortKey,
+    tableParams.current,
+    listPayload.status,
+    tableParams.pageSize,
+  ]);
 
   const showDrawer = () => {
     dispatch(
@@ -108,14 +110,23 @@ const HomePage = () => {
             selectedRow: {},
           })
         );
-
-        setLoadPage((state) => !state);
       }
     } catch (error) {
       console.log(error);
       PAGE_NOTIFICATIONS.error(error.data.message);
     }
   };
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    console.log(pagination, filters, sorter);
+    setTableParams((state) => ({ ...state, ...pagination }));
+  };
+
+  // component life cycle
+
+  useEffect(() => {
+    getFilterTasks();
+  }, [getFilterTasks]);
 
   return (
     <>
@@ -144,7 +155,13 @@ const HomePage = () => {
                 style={{ width: 200 }}
                 options={FILTER_STATUS_OPTIONS}
                 defaultValue={FILTER_STATUS_OPTIONS[0]}
-                placeholder="Select Stauls"
+                placeholder="Select Status"
+                onChange={(status) =>
+                  setListPayload((state) => ({
+                    ...state,
+                    status,
+                  }))
+                }
               />
             </Space>
 
@@ -156,6 +173,12 @@ const HomePage = () => {
                   defaultValue={SORT_OPTIONS[0]}
                   options={SORT_OPTIONS}
                   placeholder="Sort By"
+                  onChange={(sortKey) => {
+                    setListPayload((state) => ({
+                      ...state,
+                      sortKey,
+                    }));
+                  }}
                 />
               </Space>
 
@@ -170,10 +193,16 @@ const HomePage = () => {
           </div>
 
           <DataTable
-            columns={columns}
-            dataSource={data || []}
-            isLoading={false}
+            columns={TASK_TABLE_COLUMNS}
+            dataSource={
+              !isEmpty(allTasksResponse.data?.data)
+                ? allTasksResponse.data?.data
+                : []
+            }
+            isLoading={allTasksResponse.isLoading}
+            pagination={tableParams}
             actions={{ onEdit: onEditRow, onDelete: onDeletedRow }}
+            onChange={handleTableChange}
           />
         </Content>
       </div>

@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import PropTypes from "prop-types";
 
-const DataTable = ({ columns, dataSource, actions, isLoading }) => {
+const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
   const items = [
     {
       label: "Edit",
@@ -76,9 +76,11 @@ const DataTable = ({ columns, dataSource, actions, isLoading }) => {
   return (
     <Table
       dataSource={dataSource}
+      rowKey={(record) => record?._id}
       columns={convertedColumns}
       scroll={{ x: true }}
       loading={isLoading}
+      {...props}
     />
   );
 };
