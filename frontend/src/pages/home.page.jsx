@@ -13,7 +13,7 @@ import {
   FILTER_STATUS_OPTIONS,
   TASK_TABLE_COLUMNS,
 } from "../app/utils/constants";
-import CustomOffCanvas from "../app/components/CustomOffCanvas";
+import CustomOffCanvas from "../app/components/Drawer/CustomOffCanvas";
 import { useDispatch, useSelector } from "react-redux";
 import { getCanvasInfo, setCanvasInfo } from "../redux/slices/canvas.slice";
 import DeleteModal from "../app/components/DeleteModal";
@@ -67,7 +67,6 @@ const HomePage = () => {
   const showDrawer = () => {
     dispatch(
       setCanvasInfo(canvasReduxState, {
-        action: "create",
         isOpen: true,
         title: "Create Task",
       })
@@ -79,7 +78,6 @@ const HomePage = () => {
       setCanvasInfo(canvasReduxState, {
         selectedRow: record,
         isOpen: true,
-        action: "update",
         title: "Update Task",
       })
     );
@@ -94,6 +92,16 @@ const HomePage = () => {
     setModalOpen(() => true);
   };
 
+  const onTaskView = async (record) => {
+    dispatch(
+      setCanvasInfo(canvasReduxState, {
+        selectedRow: record,
+        isOpen: true,
+        title: "View Task",
+      })
+    );
+  };
+
   const hideModal = () => {
     setModalOpen(() => false);
   };
@@ -104,11 +112,14 @@ const HomePage = () => {
       const response = await deleteTask(selectedRow._id).unwrap();
 
       if (response.message === "Task deleted sucessfully") {
-        PAGE_NOTIFICATIONS.success("Organization deleted sucessfully");
+        PAGE_NOTIFICATIONS.success("Task deleted sucessfully");
         setModalOpen(() => false);
+
+        // clear selected row and toggle refresh for updated data
         dispatch(
           setCanvasInfo(canvasReduxState, {
             selectedRow: {},
+            refreshPage: !canvasReduxState.refreshPage,
           })
         );
       }
@@ -200,7 +211,11 @@ const HomePage = () => {
             }
             isLoading={allTasksResponse.isLoading}
             pagination={tableParams}
-            actions={{ onEdit: onEditRow, onDelete: onDeletedRow }}
+            actions={{
+              onEdit: onEditRow,
+              onDelete: onDeletedRow,
+              onView: onTaskView,
+            }}
             onChange={handleTableChange}
           />
         </Content>

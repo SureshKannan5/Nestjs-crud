@@ -5,11 +5,17 @@ import {
   EditOutlined,
   DeleteOutlined,
   EllipsisOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import PropTypes from "prop-types";
 
 const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
   const items = [
+    {
+      label: "View",
+      key: "view",
+      icon: <EyeOutlined />,
+    },
     {
       label: "Edit",
       key: "edit",
@@ -26,14 +32,6 @@ const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
     },
   ];
 
-  const convertedItems = useMemo(() => {
-    if (actions?.onEdit && actions?.onDelete) {
-      return items;
-    } else {
-      return [items[0]];
-    }
-  }, [actions]);
-
   const convertedColumns = useMemo(
     () => [
       ...columns,
@@ -45,17 +43,18 @@ const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
             {convertedColumns && (
               <Dropdown
                 menu={{
-                  items: convertedItems,
+                  items,
                   onClick: ({ key }) => {
                     switch (key) {
                       case "edit":
                         actions.onEdit(record);
                         break;
+
                       case "delete":
-                        actions?.onDelete(record);
+                        actions.onDelete(record);
                         break;
                       default:
-                        break;
+                        actions.onView(record);
                     }
                   },
                 }}
@@ -71,7 +70,7 @@ const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
         ),
       },
     ],
-    [columns, convertedItems]
+    [columns, actions]
   );
   return (
     <Table
@@ -89,6 +88,7 @@ DataTable.propTypes = {
   columns: PropTypes.array.isRequired,
   dataSource: PropTypes.array.isRequired,
   actions: PropTypes.shape({
+    onView: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
   }),
