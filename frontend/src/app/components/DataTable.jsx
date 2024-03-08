@@ -6,6 +6,7 @@ import {
   DeleteOutlined,
   EllipsisOutlined,
 } from "@ant-design/icons";
+import PropTypes from "prop-types";
 
 const DataTable = ({ columns, dataSource, actions, isLoading }) => {
   const items = [
@@ -82,4 +83,13 @@ const DataTable = ({ columns, dataSource, actions, isLoading }) => {
   );
 };
 
+DataTable.propTypes = {
+  columns: PropTypes.array.isRequired,
+  dataSource: PropTypes.array.isRequired,
+  actions: PropTypes.shape({
+    onEdit: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+  }),
+  isLoading: PropTypes.bool.isRequired,
+};
 export default DataTable;

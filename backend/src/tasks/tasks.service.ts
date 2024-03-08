@@ -87,7 +87,7 @@ export class TasksService {
     try {
       if (this.checkDatabaseConnection()) {
         const task = await this.userModal.deleteOne({ _id: id });
-        if (!task) {
+        if (task.deletedCount === 0) {
           throw new NotFoundException('Task not found');
         }
         console.log('task', task);

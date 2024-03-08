@@ -9,7 +9,7 @@ export const api = createApi({
   endpoints: (build) => ({
     createTask: build.mutation({
       query: (payload) => ({
-        url: `${BASE_URL}/create`,
+        url: `${BASE_URL}`,
         method: "POST",
         body: payload,
       }),

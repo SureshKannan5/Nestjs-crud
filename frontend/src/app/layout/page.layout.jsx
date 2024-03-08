@@ -1,5 +1,6 @@
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
+import { node } from "prop-types";
 
 const PageLayout = ({ children }) => {
   return (
@@ -18,6 +19,10 @@ const PageLayout = ({ children }) => {
       </Layout>
     </div>
   );
+};
+
+PageLayout.propTypes = {
+  children: node.isRequired,
 };
 
 export default PageLayout;
