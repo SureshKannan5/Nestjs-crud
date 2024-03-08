@@ -9,8 +9,8 @@ const PageLayout = ({ children }) => {
           style={{
             overflow: "initial",
             width: "100%",
-            padding: "0 25px",
-            maxWidth: 1200,
+            padding: 25,
+            maxWidth: "100%",
           }}
         >
           {children}
