@@ -32,13 +32,10 @@ export class TasksService {
 
   // list all tasks with pagination
 
-  async listAllTasks(page: number = 1, limit: number = 10): Promise<Tasks[]> {
+  async listAllTasks(): Promise<Tasks[]> {
     try {
       if (this.checkDatabaseConnection()) {
-        // skip the records for paginated results
-        const skip = (page - 1) * limit;
-
-        return this.userModal.find().skip(skip).limit(limit).exec();
+        return this.userModal.find().exec();
       }
     } catch (error) {
       throw new BadRequestException(error.message);

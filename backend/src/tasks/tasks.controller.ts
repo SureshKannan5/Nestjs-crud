@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Query,
   Post,
   Get,
   Param,
@@ -29,12 +28,9 @@ export class TasksController {
     }
   }
   @Get()
-  async listAllTasks(
-    @Query('pageNumber') pageNumber: number = 1,
-    @Query('limit') limit: number = 10,
-  ) {
+  async listAllTasks() {
     try {
-      return this.taskServices.listAllTasks(pageNumber, limit);
+      return this.taskServices.listAllTasks();
     } catch (error) {
       throw new BadRequestException(error.message);
     }

@@ -106,4 +106,4 @@ After installing the frontend dependencies, run the following command in the sam
 npm run dev
 ```
 
-This command will start the frontend server, and you'll be able to access the website on localhost:5174 in your web browser.
+This command will start the frontend server, and you'll be able to access the website on localhost:5173 in your web browser.
