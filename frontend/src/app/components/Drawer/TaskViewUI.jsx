@@ -4,7 +4,7 @@ import { getCanvasInfo } from "../../../redux/slices/canvas.slice";
 import { useEffect } from "react";
 import { isEmpty } from "lodash";
 import { useLazyGetSingleTaskQuery } from "../../../redux/services/baseApiSetup";
-import { STATUS_BADGE } from "../../utils/constants";
+import { PAGE_NOTIFICATIONS, STATUS_BADGE } from "../../utils/constants";
 import moment from "moment";
 import { Tag } from "antd";
 
@@ -18,9 +18,18 @@ const TaskViewUI = () => {
   // fetch a Selected By ID
 
   useEffect(() => {
-    if (!isEmpty(selectedRow["_id"])) {
-      getTaskById(selectedRow["_id"]);
+    async function fetchTask() {
+      try {
+        if (!isEmpty(selectedRow["_id"])) {
+          await getTaskById(selectedRow["_id"]).unwrap();
+        }
+      } catch (error) {
+        console.log(error);
+        PAGE_NOTIFICATIONS.error(error.data.message);
+      }
     }
+
+    fetchTask();
   }, [getTaskById, selectedRow]);
 
   // get Status ui badge

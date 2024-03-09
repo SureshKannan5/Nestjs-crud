@@ -148,6 +148,7 @@ const HomePage = () => {
       setTableParams((state) => ({ ...state, total: response.totalTasks }));
     } catch (error) {
       console.log("error", error);
+      PAGE_NOTIFICATIONS.error(error.data.message);
     }
   }, [
     listPayload.sortKey,
