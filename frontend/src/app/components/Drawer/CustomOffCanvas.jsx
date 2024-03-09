@@ -33,9 +33,12 @@ const CustomOffCanvas = () => {
     }
   }, [selectedRow, form]);
 
+  // submit form Date when appropriate action.
+
   const onSubmit = async (values) => {
     const isCreateView = title === "Create Task";
 
+    // Create a new task with fields
     if (isCreateView) {
       try {
         await createTask(values).unwrap();
@@ -48,6 +51,7 @@ const CustomOffCanvas = () => {
     }
 
     try {
+      // Update Existing task
       await updateTask({ id: selectedRow._id, payload: values }).unwrap();
       PAGE_NOTIFICATIONS.success("Task updated sucessfully");
       onClose("event", true);
@@ -56,8 +60,9 @@ const CustomOffCanvas = () => {
     }
   };
 
+  // actions needs to perform when canvas is closed. close and empty the form fields and trigger page refresh action
+
   const onClose = (cleseEvent, reloadPage) => {
-    console.log("refreshPage", refreshPage);
     dispatch(
       setCanvasInfo(canvasReduxState, {
         selectedRow: {},

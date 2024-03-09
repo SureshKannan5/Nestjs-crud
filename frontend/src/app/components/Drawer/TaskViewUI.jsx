@@ -8,18 +8,22 @@ import { STATUS_BADGE } from "../../utils/constants";
 import moment from "moment";
 import { Tag } from "antd";
 
+// UI Component for viewing task information
+
 const TaskViewUI = () => {
   const { selectedRow } = useSelector(getCanvasInfo);
 
   const [getTaskById, { data }] = useLazyGetSingleTaskQuery();
 
-  console.log(data);
+  // fetch a Selected By ID
 
   useEffect(() => {
     if (!isEmpty(selectedRow["_id"])) {
       getTaskById(selectedRow["_id"]);
     }
-  }, [selectedRow]);
+  }, [getTaskById, selectedRow]);
+
+  // get Status ui badge
 
   const getMatchedBadge = () => {
     const matchedStatus = STATUS_BADGE[data?.status];

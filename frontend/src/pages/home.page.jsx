@@ -12,6 +12,7 @@ import {
   SORT_OPTIONS,
   FILTER_STATUS_OPTIONS,
   TASK_TABLE_COLUMNS,
+  customPageSizeOptions,
 } from "../app/utils/constants";
 import CustomOffCanvas from "../app/components/Drawer/CustomOffCanvas";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,11 +26,15 @@ const { Title, Text } = Typography;
 const HomePage = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Datatable required fields are present in below state fro server side pagination
+
   const [tableParams, setTableParams] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
+
+  // Filter payload for listing task.
 
   const [listPayload, setListPayload] = useState({
     sortKey: "DESC",
@@ -44,26 +49,7 @@ const HomePage = () => {
 
   const [listFilteredTasks, allTasksResponse] = useListFilteredTasksMutation();
 
-  const getFilterTasks = useCallback(async () => {
-    try {
-      const response = await listFilteredTasks({
-        page: tableParams.current,
-        limit: tableParams.pageSize,
-        payload: listPayload,
-      }).unwrap();
-
-      setTableParams((state) => ({ ...state, total: response.totalTasks }));
-    } catch (error) {
-      console.log("error", error);
-    }
-  }, [
-    listPayload.sortKey,
-    tableParams.current,
-    listPayload.status,
-    tableParams.pageSize,
-    canvasReduxState.refreshPage,
-  ]);
-
+  // below functions are called whenever canvas open and close
   const showDrawer = () => {
     dispatch(
       setCanvasInfo(canvasReduxState, {
@@ -72,6 +58,12 @@ const HomePage = () => {
       })
     );
   };
+
+  const hideModal = () => {
+    setModalOpen(() => false);
+  };
+
+  // Task Actions View, edit, delete when these actions are clicked
 
   const onEditRow = (record) => {
     dispatch(
@@ -102,9 +94,7 @@ const HomePage = () => {
     );
   };
 
-  const hideModal = () => {
-    setModalOpen(() => false);
-  };
+  // Delete the task with API actions and Update the page
 
   const handleDelete = async () => {
     const { selectedRow } = canvasReduxState;
@@ -142,7 +132,30 @@ const HomePage = () => {
 
     setListPayload((state) => ({ ...state, [name]: value }));
   };
+
   // component life cycle
+
+  // fetch data from the server whenever filter and refresh flag is changed
+
+  const getFilterTasks = useCallback(async () => {
+    try {
+      const response = await listFilteredTasks({
+        page: tableParams.current,
+        limit: tableParams.pageSize,
+        payload: listPayload,
+      }).unwrap();
+
+      setTableParams((state) => ({ ...state, total: response.totalTasks }));
+    } catch (error) {
+      console.log("error", error);
+    }
+  }, [
+    listPayload.sortKey,
+    tableParams.current,
+    listPayload.status,
+    tableParams.pageSize,
+    canvasReduxState.refreshPage,
+  ]);
 
   useEffect(() => {
     getFilterTasks();
@@ -210,7 +223,11 @@ const HomePage = () => {
                 : []
             }
             isLoading={allTasksResponse.isLoading}
-            pagination={tableParams}
+            pagination={{
+              showSizeChanger: true,
+              ...tableParams,
+              pageSizeOptions: customPageSizeOptions,
+            }}
             actions={{
               onEdit: onEditRow,
               onDelete: onDeletedRow,

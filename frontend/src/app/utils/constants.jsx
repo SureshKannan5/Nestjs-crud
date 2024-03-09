@@ -69,3 +69,5 @@ export const TASK_TABLE_COLUMNS = [
     },
   },
 ];
+
+export const customPageSizeOptions = ["10", "20", "50"];

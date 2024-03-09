@@ -8,6 +8,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import PropTypes from "prop-types";
+import { isEmpty } from "lodash";
 
 const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
   const items = [
@@ -32,46 +33,50 @@ const DataTable = ({ columns, dataSource, actions, isLoading, ...props }) => {
     },
   ];
 
-  const convertedColumns = useMemo(
-    () => [
-      ...columns,
-      {
-        title: "Action",
-        key: "operation",
-        render: (_, record) => (
-          <Space size="middle">
-            {convertedColumns && (
-              <Dropdown
-                menu={{
-                  items,
-                  onClick: ({ key }) => {
-                    switch (key) {
-                      case "edit":
-                        actions.onEdit(record);
-                        break;
+  // add Actions columns when the action props are defined.
 
-                      case "delete":
-                        actions.onDelete(record);
-                        break;
-                      default:
-                        actions.onView(record);
-                    }
-                  },
-                }}
-                trigger={["click"]}
-              >
-                <EllipsisOutlined
-                  style={{ cursor: "pointer", fontSize: "24px" }}
-                  onClick={(e) => e.preventDefault()}
-                />
-              </Dropdown>
-            )}
-          </Space>
-        ),
-      },
-    ],
-    [columns, actions]
-  );
+  const convertedColumns = useMemo(() => {
+    if (!isEmpty(actions)) {
+      return [
+        ...columns,
+        {
+          title: "Action",
+          key: "operation",
+          render: (_, record) => (
+            <Space size="middle">
+              {convertedColumns && (
+                <Dropdown
+                  menu={{
+                    items,
+                    onClick: ({ key }) => {
+                      switch (key) {
+                        case "edit":
+                          actions.onEdit(record);
+                          break;
+
+                        case "delete":
+                          actions.onDelete(record);
+                          break;
+                        default:
+                          actions.onView(record);
+                      }
+                    },
+                  }}
+                  trigger={["click"]}
+                >
+                  <EllipsisOutlined
+                    style={{ cursor: "pointer", fontSize: "24px" }}
+                    onClick={(e) => e.preventDefault()}
+                  />
+                </Dropdown>
+              )}
+            </Space>
+          ),
+        },
+      ];
+    }
+    return columns;
+  }, [columns, actions]);
   return (
     <Table
       dataSource={dataSource}
